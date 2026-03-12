@@ -1,12 +1,16 @@
-import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Deck {
     private ArrayList<Card> cards = new ArrayList<Card>();
 
-    public Deck (ArrayList<Card> cards) {
-        this.cards = cards;
+    public Deck () {
+        for(Suit suit : Suit.values()) {
+            for(Rank rank : Rank.values()) {
+                Card card = new Card(suit, rank);
+                cards.add(card);
+            }
+        }
     }
 
     public ArrayList<Card> getCards() {
