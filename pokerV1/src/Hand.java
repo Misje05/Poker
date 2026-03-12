@@ -6,6 +6,7 @@ public class Hand {
     private List<Card> cards;
 
     public Hand(List<Card> cards) {
+        this.cards = cards;
     }
 
     public List<Card> getCards() {

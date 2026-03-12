@@ -15,6 +15,7 @@ public class TestHand {
         List<Card> cards = new ArrayList<>();
         cards.add(diamondKing);
         cards.add(spadeNine);
+
         Hand h = new Hand(cards);
 
         assertFalse(h.isEmpty());
