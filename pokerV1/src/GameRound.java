@@ -35,7 +35,7 @@ public class GameRound {
        }
 
        public Player evalWinner() {
-           return Evaluator.evaluate();
+           return Evaluator.evaluateHandRankings();
        }
 
 }
