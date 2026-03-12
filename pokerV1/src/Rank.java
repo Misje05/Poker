@@ -5,10 +5,19 @@ public enum Rank {
     private final int value;
 
     Rank(int value) {
+
         this.value = value;
     }
 
     public int getValue() {
+
+        return value;
+    }
+
+    public int getLowValue() {
+        if (this == ACE) {
+            return 1; // Ace kan også være 1 i noen spill
+        }
         return value;
     }
 }
