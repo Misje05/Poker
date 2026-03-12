@@ -21,9 +21,6 @@ public class Hand {
     }
 
     public boolean isEmpty() {
-        if (!cards.isEmpty()) {
-            return true;
-        }
-        return false;
+        return cards.isEmpty();
     }
 }
