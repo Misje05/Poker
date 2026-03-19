@@ -81,6 +81,8 @@ public class Evaluator {
         handRankings = 10;
     }
 
+    // EGOR
+
     private static List<Card> combineAndSort(Hand hand, List<Card> table) {
         List<Card> allCards = hand.getCards();
         allCards.addAll(table);
@@ -88,9 +90,6 @@ public class Evaluator {
         allCards.sort((a,b) -> b.getRank().compareTo(a.getRank()));
         return allCards;
     }
-
-
-    // EGOR
 
     public static int compareHandRankings(Hand h1, Hand h2, List<Card> table){
         int h1Rank = evaluateHandRankings(h1, table);
