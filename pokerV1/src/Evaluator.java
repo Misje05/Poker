@@ -72,16 +72,18 @@ public class Evaluator {
     }
 
     public static void checkStraightFlush(List<Card> table) {
+
         handRankings = 9;
     }
 
     public static void checkRoyalFlush(List<Card> table) {
+
         handRankings = 10;
     }
 
     private static List<Card> combineAndSort(Hand hand, List<Card> table) {
-        List<Card> allCards = new ArrayList<>(table);
-        allCards.addAll(hand.getCards());
+        List<Card> allCards = hand.getCards();
+        allCards.addAll(table);
 
         allCards.sort((a,b) -> b.getRank().compareTo(a.getRank()));
         return allCards;
@@ -91,6 +93,24 @@ public class Evaluator {
     // EGOR
 
     public static int compareHandRankings(Hand h1, Hand h2, List<Card> table){
-      return 0;
+        int h1Rank = evaluateHandRankings(h1, table);
+        int h2Rank = evaluateHandRankings(h2, table);
+
+        if (h1Rank != h2Rank){
+            return Integer.compare(h1Rank, h2Rank);
+        }
+
+        List<Card> cardsH1 = combineAndSort(h1, table);
+        List<Card> cardsH2 = combineAndSort(h2, table);
+
+        for (int i = 0; i < Math.min(cardsH1.size(), cardsH2.size()); i++){
+            if (cardsH1.get(i).getRank().getValue() > cardsH2.get(i).getRank().getValue()){
+                return 1;
+            }
+            else if (cardsH1.get(i).getRank().getValue() < cardsH2.get(i).getRank().getValue()){
+                return -1;
+            }
+        }
+        return 0;
     }
 }
