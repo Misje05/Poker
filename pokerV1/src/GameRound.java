@@ -13,7 +13,7 @@ public class GameRound {
            this.players = players;
        }
 
-       public ArrayList<Card> DealCards() {
+       public ArrayList<Card> dealCards() {
            Card card1 = deck.dealCard();
            Card card2 = deck.dealCard();
            ArrayList<Card> cards = new ArrayList<>();
@@ -34,8 +34,8 @@ public class GameRound {
            }
        }
 
-       public Player evalWinner() {
-           return Evaluator.evaluateHandRankings();
-       }
+//       public Player evalWinner() {
+//           return Evaluator.evaluateHandRankings();
+//       }
 
 }
