@@ -12,6 +12,11 @@ public class Card {
         this.rank = rank;
     }
 
+
+    public String getCardImage() {
+        return this.rank.name() + "_" + this.suit.name() + ".svg";
+    }
+
     /** @return Kortets farge */
     public Suit getSuit() {
         return suit;

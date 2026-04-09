@@ -10,8 +10,8 @@ public class Main {
 
 
         for(int i = 0; i < number; i++) {
-            String name =  JOptionPane.showInputDialog("Name of the " + i + " player:");
-            int chips = Integer.parseInt(JOptionPane.showInputDialog("Amount of chips of the " + i + " player:"));
+            String name =  JOptionPane.showInputDialog("Name of the " + (i + 1) + " player:");
+            int chips = Integer.parseInt(JOptionPane.showInputDialog("Amount of chips of the " + (i + 1) + " player:"));
             Player player = new Player(name,chips);
             players.add(player);
         }
