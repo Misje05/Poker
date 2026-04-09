@@ -22,6 +22,20 @@ public class GameRound {
         return cards;
     }
 
+    public void dealFlop() {
+        table.add(deck.dealCard());
+        table.add(deck.dealCard());
+        table.add(deck.dealCard());
+    }
+
+    public void dealTurn() {
+        table.add(deck.dealCard());
+    }
+
+    public void dealRiver() {
+        table.add(deck.dealCard());
+    }
+
     public void nextPhase() {
         if (roundphase == RoundPhase.PRE_FLOP) {
             roundphase = RoundPhase.FLOP;

@@ -86,6 +86,10 @@ public class Player {
         this.status = PlayerStatus.FOLDED;
     }
 
+    public void winChips(int amount) {
+        this.chips += amount;
+    }
+
     /**
      * Legger til et kort i spillerens hånd (hole card).
      * Navngitt etter prosjektets UML-diagram.
