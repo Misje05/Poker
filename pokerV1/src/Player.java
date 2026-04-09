@@ -18,10 +18,13 @@ public class Player {
     private int chips;
 
     /** Spillerens private kort (hole cards). */
-    private List<Card> hand;
+    private Hand hand;
 
     /** Spillerens nåværende tilstand i runden. */
     private PlayerStatus status;
+
+    /** Spillerens nåværende bet */
+    private int amountBet;
 
     /**
      * Konstruktør for å opprette en ny spiller.
@@ -31,7 +34,7 @@ public class Player {
     public Player(String name, int initialChips) {
         this.name = name;
         this.chips = initialChips;
-        this.hand = new ArrayList<>();
+        this.hand = new Hand();
         this.status = PlayerStatus.ACTIVE;
     }
 
@@ -89,8 +92,8 @@ public class Player {
      * * @param card Kortet som skal deles ut.
      */
     public void addCard(Card card) {
-        if (hand.size() < 2) {
-            hand.add(card);
+        if (hand.getCard(0) == null || hand.getCard(1) == null) {
+            hand.addCard(card);
         } else {
             System.err.println("Forsøk på å legge til for mange kort til " + name);
         }
@@ -100,7 +103,7 @@ public class Player {
      * Fjerner alle kort fra spillerens hånd.
      */
     public void clearHand() {
-        hand.clear();
+        hand.emptyHand();
     }
 
     /**
@@ -127,7 +130,7 @@ public class Player {
     }
 
     /** @return En liste over spillerens nåværende kort. */
-    public List<Card> getHand() {
+    public Hand getHand() {
         return hand;
     }
 
@@ -148,6 +151,18 @@ public class Player {
     public void setStatus(PlayerStatus status) {
         this.status = status;
     }
+
+    /** Oppdatere en spiller sin nåværende mengde chips satset **/
+    public void setAmountBet(int amountBet) {
+        this.amountBet = amountBet;
+    }
+
+
+    /** Returnere en spiller sin nåværende mengde chips satset **/
+    public int getAmountBet() {
+        return amountBet;
+    }
+
 
     /**
      * Genererer en streng-representasjon av spillerens nåværende status.
