@@ -21,6 +21,7 @@ public class Main {
         int lastBet = smallBlind * 2;
         int sbIndex = 0;
         int index = 2;
+
         ArrayList<Player> copyPlayers = new ArrayList<>();
         for(Player player : players) {
             copyPlayers.add(player);

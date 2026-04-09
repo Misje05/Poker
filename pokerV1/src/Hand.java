@@ -1,16 +1,20 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Hand {
 
     private List<Card> cards;
 
-    public Hand() {}
+    public Hand() { this.cards = new ArrayList<Card>();}
 
     public Hand(List<Card> cards) {
         this.cards = cards;
     }
 
-    public Card getCard(int index) { return cards.get(index); }
+    public Card getCard(int index) {
+        if (index < 0 || index >= cards.size()) return null;
+        return cards.get(index);
+    }
 
     public List<Card> getCards() {
         return cards;
