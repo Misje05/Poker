@@ -20,47 +20,54 @@ public class Main {
         int smallBlind = Integer.parseInt(JOptionPane.showInputDialog("Write small blind:"));
         int lastBet = smallBlind * 2;
         int sbIndex = 0;
-        int index = 2;
 
         ArrayList<Player> copyPlayers = new ArrayList<>();
         for(Player player : players) {
             copyPlayers.add(player);
         }
 
-
         do{
             GameRound gameRound = new GameRound(copyPlayers);
-
-
             gameRound.setPot(smallBlind * 3);
+
             /** Trenger en til doWhile **/
             if (gameRound.getRoundPhase() != RoundPhase.PRE_FLOP) {
                 lastBet = 0;
             }
 
+            if(gameRound.getRoundPhase() == RoundPhase.PRE_FLOP) {
 
-            for(Player player : players){
-                ArrayList<Card> cards = new ArrayList<>();
-                cards = gameRound.dealCards();
-                player.addCard(cards.get(0));
-                player.addCard(cards.get(1));
+                for(Player p : players) {
+                    p.clearHand();
+                }
+
+                for (Player player : players) {
+                    ArrayList<Card> cards = new ArrayList<>();
+                    cards = gameRound.dealCards();
+                    player.addCard(cards.get(0));
+                    player.addCard(cards.get(1));
+                }
             }
 
+            int sb = sbIndex % players.size();
+            int bb = (sbIndex + 1) % players.size();
 
-            players.get(sbIndex % players.size()).placeBet(smallBlind);
-            players.get(sbIndex + 1 % players.size()).placeBet(smallBlind * 2);
-            players.get(sbIndex % players.size()).setAmountBet(smallBlind);
-            players.get(sbIndex + 1 % players.size()).setAmountBet(smallBlind * 2);
+            players.get(sb).placeBet(smallBlind);
+            players.get(bb).placeBet(smallBlind * 2);
+
+            players.get(sb).setAmountBet(smallBlind);
+            players.get(bb).setAmountBet(smallBlind * 2);
+
             sbIndex++;
 
-
+            int index = (sbIndex + 1) % players.size();
             int bogusRound = 1;
 
 
             while(bogusRound < players.size()) {
                 if(players.get(index).getStatus() == PlayerStatus.FOLDED || players.get(index).getStatus() == PlayerStatus.ALL_IN) {
                     bogusRound++;
-                    index++;
+                    index = (index + 1) % players.size();
 
 
                 }
@@ -79,7 +86,7 @@ public class Main {
                     if(choice1 == JOptionPane.YES_OPTION) {
                         players.get(index).setStatus(PlayerStatus.FOLDED);
                         bogusRound++;
-                        index++;
+                        index = (index + 1) % players.size();;
                     }
                     else {
                         players.get(index).setStatus(PlayerStatus.ALL_IN);
@@ -88,7 +95,7 @@ public class Main {
                         gameRound.addToPot(remainingChips);
                         players.get(index).setAmountBet(remainingChips + players.get(index).getAmountBet());
                         bogusRound++;
-                        index++;
+                        index = (index + 1) % players.size();;
                     }
 
 
@@ -108,35 +115,55 @@ public class Main {
                     if(choice2 == JOptionPane.YES_OPTION) {
                         players.get(index).setStatus(PlayerStatus.FOLDED);
                         bogusRound++;
-                        index++;
+                        index = (index + 1) % players.size();;
                     }
                     else if(choice2 == JOptionPane.NO_OPTION) {
                         if(lastBet == 0) {
                             bogusRound++;
-                            index++;
+                            index = (index + 1) % players.size();;
                         } else {
                             int newBet = lastBet -  players.get(index).getAmountBet();
                             players.get(index).placeBet(newBet);
                             gameRound.addToPot(newBet);
                             players.get(index).setAmountBet(newBet + players.get(index).getAmountBet());
                             bogusRound++;
-                            index++;
+                            index = (index + 1) % players.size();;
                         }
                     }
                     else {
                         bogusRound = 1;
                         int newBet = Integer.parseInt(JOptionPane.showInputDialog("Choose amount to bet, Latest bet was: " + lastBet));
-                        if(players.get(index).getChips() == newBet) {
+                        if (players.get(index).getChips() == newBet) {
                             players.get(index).setStatus(PlayerStatus.ALL_IN);
                         }
                         players.get(index).placeBet(newBet - players.get(index).getAmountBet());
-                        gameRound.addToPot  (newBet - players.get(index).getAmountBet());
+                        gameRound.addToPot(newBet - players.get(index).getAmountBet());
                         players.get(index).setAmountBet(newBet);
                         lastBet = newBet;
+
+                        bogusRound++;
                     }
+                }
+                boolean allMatched = true;
+
+                for (Player p : players) {
+                    if (p.getStatus() != PlayerStatus.FOLDED &&
+                            p.getStatus() != PlayerStatus.ALL_IN &&
+                            p.getAmountBet() != lastBet) {
+
+                        allMatched = false;
+                        break;
+                    }
+                }
+
+                if (allMatched) {
+                    break;
                 }
             }
             gameRound.nextPhase();
+
+            players.removeIf(p -> p.getStatus() == PlayerStatus.FOLDED);
+
         } while(copyPlayers.size() > 1);
 
 
