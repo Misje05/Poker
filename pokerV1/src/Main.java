@@ -2,17 +2,52 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entry point for the poker application. Handles player login, game loop, betting, and winner determination.
+ */
 public class Main {
+
+    /**
+     * Launches the poker game, prompts players to login or register,
+     * then runs rounds until one player remains or the game is stopped.
+     *
+     * @param args command-line arguments (not used)
+     */
     public static void main(String[] args) {
-        int number = getIntInput("How many players?", 2, 10);
+        int number = getIntInput("How many players?", 1, 10);
         if (number == -1) return;
-        
+
         ArrayList<Player> players = new ArrayList<>();
         for (int i = 0; i < number; i++) {
-            String name = JOptionPane.showInputDialog("Name of player " + (i + 1) + ":");
-            if (name == null) break;
-            int chips = getIntInput("Amount of chips for " + name + ":", 1, 1000000);
-            players.add(new Player(name, chips));
+            String[] options = {"Login", "Register", "Cancel"};
+            int choice = JOptionPane.showOptionDialog(null, "Player " + (i + 1) + ": Choose an action", "Poker Login",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+            if (choice == 2 || choice == -1) return; // Cancel or closed
+
+            String name = JOptionPane.showInputDialog("Username:");
+            String pass = JOptionPane.showInputDialog("Password:");
+
+            if (choice == 1) { // REGISTER
+                if (DatabaseManager.registerPlayer(name, pass)) {
+                    JOptionPane.showMessageDialog(null, "Registration successful! You can now login.");
+                    i--; // Go back to login for this player
+                } else {
+                    JOptionPane.showMessageDialog(null, "Registration failed. Username might be taken.");
+                    i--;
+                }
+                continue;
+            }
+
+            // LOGIN
+            int chips = DatabaseManager.loginPlayer(name, pass);
+            if (chips != -1) {
+                players.add(new Player(name, chips));
+                JOptionPane.showMessageDialog(null, "Welcome " + name + "! Chips: " + chips);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid login for " + name);
+                i--;
+            }
         }
 
         int smallBlind = getIntInput("Write small blind value:", 1, 10000);
@@ -21,8 +56,7 @@ public class Main {
 
         while (players.size() > 1) {
             GameRound gameRound = new GameRound(players);
-            
-            // Initialization for new round
+
             for (Player p : players) {
                 p.resetForNewRound();
                 p.setAmountBet(0);
@@ -44,18 +78,13 @@ public class Main {
                 player.addCard(cards.get(1));
             }
 
-            // PHASES: Pre-Flop -> Flop -> Turn -> River
             int lastBet = smallBlind * 2;
             int startIdx = (dealerIndex + 3) % players.size();
 
             while (true) {
-                // RUN BETTING STREET
                 lastBet = runBettingStreet(players, gameRound, startIdx, lastBet);
-                
-                // CHECK IF ROUND OVER (only one player remains)
                 if (countActivePlayers(players) <= 1) break;
 
-                // TRANSITION TO NEXT PHASE
                 RoundPhase current = gameRound.getRoundPhase();
                 if (current == RoundPhase.PRE_FLOP) gameRound.dealFlop();
                 else if (current == RoundPhase.FLOP) gameRound.dealTurn();
@@ -65,7 +94,7 @@ public class Main {
                 gameRound.nextPhase();
                 lastBet = 0;
                 for (Player p : players) p.setAmountBet(0);
-                startIdx = (dealerIndex + 1) % players.size(); // After flop, small blind starts
+                startIdx = (dealerIndex + 1) % players.size();
             }
 
             // SHOWDOWN / AWARD POT
@@ -73,6 +102,16 @@ public class Main {
             if (winner != null) {
                 JOptionPane.showMessageDialog(null, "🏆 " + winner.getName() + " wins " + gameRound.getPot() + " chips!");
                 winner.winChips(gameRound.getPot());
+
+                // SAVE TO DATABASE
+                DatabaseManager.updateChips(winner.getName(), winner.getChips());
+            }
+
+            // UPDATE LOSERS TOO (so their chips go down in DB)
+            for (Player p : players) {
+                if (p != winner) {
+                    DatabaseManager.updateChips(p.getName(), p.getChips());
+                }
             }
 
             // ELIMINATION
@@ -96,11 +135,21 @@ public class Main {
         }
     }
 
+    /**
+     * Runs a single betting street, prompting each active player to fold, call, check, or raise.
+     * Resets the round counter if a raise occurs so all players get another chance to act.
+     *
+     * @param players the list of all players in the round
+     * @param round   the current game round
+     * @param index   the index of the first player to act
+     * @param lastBet the current highest bet amount on this street
+     * @return the final highest bet after all players have acted
+     */
     private static int runBettingStreet(ArrayList<Player> players, GameRound round, int index, int lastBet) {
         int playersProcessed = 0;
         while (playersProcessed < players.size()) {
             Player p = players.get(index % players.size());
-            
+
             // Skip folded/all-in players
             if (p.getStatus() == PlayerStatus.FOLDED || p.getStatus() == PlayerStatus.ALL_IN) {
                 playersProcessed++;
@@ -133,18 +182,18 @@ public class Main {
                 if (rStr == null) rStr = String.valueOf(lastBet);
                 int newBet = Integer.parseInt(rStr);
                 if (newBet < lastBet) newBet = lastBet;
-                
+
                 int toAdd = newBet - p.getAmountBet();
                 if (toAdd >= p.getChips()) {
                     toAdd = p.getChips();
                     newBet = p.getAmountBet() + toAdd;
                     p.setStatus(PlayerStatus.ALL_IN);
                 }
-                
+
                 p.placeBet(toAdd);
                 round.addToPot(toAdd);
                 p.setAmountBet(newBet);
-                
+
                 if (newBet > lastBet) {
                     lastBet = newBet;
                     playersProcessed = 0; // Reset as someone raised
@@ -157,6 +206,12 @@ public class Main {
         return lastBet;
     }
 
+    /**
+     * Counts the number of players who have not folded.
+     *
+     * @param players the list of all players in the round
+     * @return the number of active (non-folded) players
+     */
     private static int countActivePlayers(List<Player> players) {
         int count = 0;
         for (Player p : players) {
@@ -165,6 +220,15 @@ public class Main {
         return count;
     }
 
+    /**
+     * Prompts the user for an integer input within a specified range.
+     * Keeps prompting until a valid value is entered or the dialog is cancelled.
+     *
+     * @param message the prompt message to display
+     * @param min     the minimum acceptable value (inclusive)
+     * @param max     the maximum acceptable value (inclusive)
+     * @return the valid integer entered by the user, or -1 if cancelled
+     */
     private static int getIntInput(String message, int min, int max) {
         while (true) {
             String in = JOptionPane.showInputDialog(message);
