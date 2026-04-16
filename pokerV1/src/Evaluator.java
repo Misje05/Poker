@@ -1,12 +1,19 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Evaluates and compares poker hands against community table cards.
+ */
 public class Evaluator {
 
     private static int handRankings;
 
-    /*
-     * Method which sets and integer for the value of what rank the player has acchieved with the
+    /**
+     * Evaluates the best hand ranking achievable from the player's hand and table cards.
+     *
+     * @param hand  the player's hole cards
+     * @param table the community cards on the table
+     * @return an integer from 1 (high card) to 10 (royal flush) representing the best hand
      */
     public static int evaluateHandRankings(Hand hand, List<Card> table) {
 
@@ -31,10 +38,18 @@ public class Evaluator {
 
     // SUPPORT METHODS
 
+    /**
+     * Sets the hand ranking to 1 (high card), the lowest possible rank.
+     */
     public static void checkHighCard() {
         handRankings = 1;
     }
 
+    /**
+     * Sets the hand ranking to 2 if at least one pair is found among the cards.
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkOnePair(List<Card> tableHand) {
         for (int i = 0; i < tableHand.size(); i++) {
             for (int j = i + 1; j < tableHand.size(); j++) {
@@ -46,12 +61,16 @@ public class Evaluator {
         }
     }
 
-
     /*
      * Checks if a pair exsists in the tableHand. If it does, the rank is added to
      * pairedRanks where a for loop later counts the number of pairs, which if it's
      * equalt or greather than 2, sets the value of two pairs to the handRankings
      * variable.
+     */
+    /**
+     * Sets the hand ranking to 3 if at least two distinct pairs are found among the cards.
+     *
+     * @param tableHand the combined list of hole cards and community cards
      */
     public static void checkTwoPairs(List<Card> tableHand) {
         int pairCount = 0;
@@ -78,6 +97,11 @@ public class Evaluator {
         }
     }
 
+    /**
+     * Sets the hand ranking to 4 if three or more cards share the same rank.
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkThreeOfAKind(List<Card> tableHand) {
         int counter = 0;
 
@@ -97,6 +121,11 @@ public class Evaluator {
     }
 
     // Se gjennom
+    /**
+     * Sets the hand ranking to 5 if five consecutive rank values are found, including Ace-low (A-2-3-4-5).
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkStraight(List<Card> tableHand) {
         // Extract unique ranks and sort them
         List<Integer> uniqueRanks = new ArrayList<>();
@@ -123,6 +152,11 @@ public class Evaluator {
         }
     }
 
+    /**
+     * Sets the hand ranking to 6 if five or more cards share the same suit.
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkFlush(List<Card> tableHand) {
         int counter = 0;
 
@@ -142,6 +176,11 @@ public class Evaluator {
     }
 
     // Se gjennom
+    /**
+     * Sets the hand ranking to 7 if the cards contain both a three-of-a-kind and a pair.
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkFullHouse(List<Card> tableHand) {
         boolean hasThreeOfAKind = false;
         boolean hasPair = false;
@@ -160,7 +199,7 @@ public class Evaluator {
                 }
             }
             countedRanks.add(tableHand.get(i).getRank());
-            
+
             if (counter >= 2) {
                 hasThreeOfAKind = true;
             } else if (counter >= 1) {
@@ -173,6 +212,11 @@ public class Evaluator {
         }
     }
 
+    /**
+     * Sets the hand ranking to 8 if exactly four cards share the same rank.
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkFourOfAKind(List<Card> tableHand) {
         int counter = 0;
 
@@ -192,11 +236,17 @@ public class Evaluator {
     }
 
     // Se gjennom
+    /**
+     * Sets the hand ranking to 9 if five consecutive cards of the same suit are found,
+     * including Ace-low (A-2-3-4-5) of the same suit.
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkStraightFlush(List<Card> tableHand) {
         // For each suit, extract cards and check for straight
         for (Suit suit : Suit.values()) {
             List<Integer> suitRanks = new ArrayList<>();
-            
+
             for (Card card : tableHand) {
                 if (card.getSuit() == suit) {
                     int value = card.getRank().getValue();
@@ -205,9 +255,9 @@ public class Evaluator {
                     }
                 }
             }
-            
+
             suitRanks.sort((a, b) -> Integer.compare(b, a));
-            
+
             // Check for 5 consecutive cards in same suit
             if (suitRanks.size() >= 5) {
                 for (int i = 0; i <= suitRanks.size() - 5; i++) {
@@ -216,7 +266,7 @@ public class Evaluator {
                         return;
                     }
                 }
-                
+
                 // Check for Ace-low straight flush (A-2-3-4-5)
                 if (suitRanks.contains(14) && suitRanks.contains(2) && suitRanks.contains(3)
                         && suitRanks.contains(4) && suitRanks.contains(5)) {
@@ -228,17 +278,22 @@ public class Evaluator {
     }
 
     // Se gjennom
+    /**
+     * Sets the hand ranking to 10 if any suit contains A-K-Q-J-10 (royal flush).
+     *
+     * @param tableHand the combined list of hole cards and community cards
+     */
     public static void checkRoyalFlush(List<Card> tableHand) {
         // For each suit, check if it contains A-K-Q-J-10
         for (Suit suit : Suit.values()) {
             List<Integer> suitRanks = new ArrayList<>();
-            
+
             for (Card card : tableHand) {
                 if (card.getSuit() == suit) {
                     suitRanks.add(card.getRank().getValue());
                 }
             }
-            
+
             // Check for royal flush (A-K-Q-J-10)
             if (suitRanks.contains(14) && suitRanks.contains(13) && suitRanks.contains(12)
                     && suitRanks.contains(11) && suitRanks.contains(10)) {
@@ -248,8 +303,13 @@ public class Evaluator {
         }
     }
 
-
-
+    /**
+     * Combines and sorts hole cards and community cards by rank in descending order.
+     *
+     * @param hand  the player's hole cards
+     * @param table the community cards on the table
+     * @return a sorted list of all cards, highest rank first
+     */
     private static List<Card> combineAndSort(Hand hand, List<Card> table) {
         List<Card> allCards = hand.getCards();
         allCards.addAll(table);
@@ -258,6 +318,15 @@ public class Evaluator {
         return allCards;
     }
 
+    /**
+     * Compares two hands against the community table cards.
+     * If hand rankings are equal, individual card values are compared as a tiebreaker.
+     *
+     * @param h1    the first player's hand
+     * @param h2    the second player's hand
+     * @param table the community cards on the table
+     * @return 1 if h1 wins, -1 if h2 wins, or 0 if it is a tie
+     */
     public static int compareHandRankings(Hand h1, Hand h2, List<Card> table){
         int h1Rank = evaluateHandRankings(h1, table);
         int h2Rank = evaluateHandRankings(h2, table);
