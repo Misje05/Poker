@@ -115,7 +115,13 @@ public class Main {
         }
 
         if (!players.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "🎊 CHAMPION: " + players.get(0).getName() + " 🎊");
+            Player maks = players.get(0);
+            for(Player p : players) {
+                if(p.getChips() > maks.getChips()) {
+                    maks = p;
+                }
+            }
+            JOptionPane.showMessageDialog(null, "🎊 CHAMPION: " + maks.getName() + " 🎊");
         }
     }
 
