@@ -1,14 +1,19 @@
 package no.hvl.dat110.poker;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class PokerController {
+
+    @Autowired
+    private PokerService pokerService;
 
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
@@ -16,7 +21,37 @@ public class PokerController {
         if (username == null) return "redirect:/login";
         model.addAttribute("username", username);
         model.addAttribute("chips", session.getAttribute("chips"));
+        model.addAttribute("tables", pokerService.getActiveTables().values());
         return "index";
+    }
+
+    @GetMapping("/game/{tableId}")
+    public String viewGame(@PathVariable String tableId, HttpSession session, Model model) {
+        String username = (String) session.getAttribute("user");
+        if (username == null) return "redirect:/login";
+        
+        PokerTable table = pokerService.getTable(tableId);
+        if (table == null) return "redirect:/";
+        
+        // Add player to table if not present
+        boolean joined = false;
+        for (Player p : table.getPlayers()) {
+            if (p.getName().equals(username)) { joined = true; break; }
+        }
+        if (!joined) {
+            table.addPlayer(new Player(username, (int)session.getAttribute("chips")));
+        }
+        
+        model.addAttribute("table", table);
+        model.addAttribute("currentUser", username);
+        return "game";
+    }
+
+    @PostMapping("/game/{tableId}/start")
+    public String startGame(@PathVariable String tableId) {
+        PokerTable table = pokerService.getTable(tableId);
+        if (table != null) table.startNewRound();
+        return "redirect:/game/" + tableId;
     }
 
     @GetMapping("/login")

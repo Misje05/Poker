@@ -17,10 +17,12 @@
             <a href="${pageContext.request.contextPath}/logout" style="color: #666; font-size: 0.8rem;">Logout</a>
         </div>
         <h3 style="text-align: left;">Active Tables</h3>
-        <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-            <div><strong>Diamond Room</strong><br><small>5/6 Players • 10/20 Blinds</small></div>
-            <button style="width: auto; padding: 5px 15px; margin-top: 0; background: #28a745;">Join</button>
-        </div>
+        <c:forEach var="t" items="${tables}">
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <div><strong>${t.id == 'high-stakes' ? '💎 High Stakes' : '🍺 Casual Play'}</strong><br><small>${t.players.size()} Players</small></div>
+                <a href="${pageContext.request.contextPath}/game/${t.id}" style="width: auto; padding: 5px 15px; background: #28a745; color: white; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">Join</a>
+            </div>
+        </c:forEach>
         <button style="background: var(--secondary); margin-top: 20px;">Create New Table</button>
     </div>
 </body>

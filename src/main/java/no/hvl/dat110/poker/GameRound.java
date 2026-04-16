@@ -14,6 +14,10 @@ public class GameRound {
         this.players = players;
     }
 
+    public ArrayList<Card> getTableCards() {
+        return table;
+    }
+
     public ArrayList<Card> dealCards() {
         Card card1 = deck.dealCard();
         Card card2 = deck.dealCard();
