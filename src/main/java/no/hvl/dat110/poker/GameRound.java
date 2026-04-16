@@ -28,16 +28,19 @@ public class GameRound {
     }
 
     public void dealFlop() {
+        deck.dealCard(); // Burn 1 card
         table.add(deck.dealCard());
         table.add(deck.dealCard());
         table.add(deck.dealCard());
     }
 
     public void dealTurn() {
+        deck.dealCard(); // Burn 1 card
         table.add(deck.dealCard());
     }
 
     public void dealRiver() {
+        deck.dealCard(); // Burn 1 card
         table.add(deck.dealCard());
     }
 

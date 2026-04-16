@@ -54,6 +54,15 @@ public class PokerController {
         return "redirect:/game/" + tableId;
     }
 
+    @PostMapping("/game/{tableId}/clear-winner")
+    public String clearWinner(@PathVariable String tableId) {
+        PokerTable table = pokerService.getTable(tableId);
+        if (table != null) {
+            table.clearLastWinner();
+        }
+        return "redirect:/game/" + tableId;
+    }
+
     @PostMapping("/game/{tableId}/action")
     public String playerAction(@PathVariable String tableId, 
                              @RequestParam String action, 
