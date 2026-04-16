@@ -23,7 +23,6 @@
                 <a href="${pageContext.request.contextPath}/game/${t.id}" style="width: auto; padding: 5px 15px; background: #28a745; color: white; border-radius: 6px; text-decoration: none; font-size: 0.9rem;">Join</a>
             </div>
         </c:forEach>
-        <button style="background: var(--secondary); margin-top: 20px;">Create New Table</button>
     </div>
 </body>
 </html>
