@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Poker P20 - Login</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/main.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>

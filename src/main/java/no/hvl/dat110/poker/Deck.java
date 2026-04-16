@@ -12,6 +12,7 @@ public class Deck {
                 cards.add(card);
             }
         }
+        Collections.shuffle(cards);
     }
 
     public ArrayList<Card> getCards() {

@@ -54,6 +54,19 @@ public class PokerController {
         return "redirect:/game/" + tableId;
     }
 
+    @PostMapping("/game/{tableId}/action")
+    public String playerAction(@PathVariable String tableId, 
+                             @RequestParam String action, 
+                             @RequestParam(defaultValue = "0") int amount,
+                             HttpSession session) {
+        String username = (String) session.getAttribute("user");
+        PokerTable table = pokerService.getTable(tableId);
+        if (table != null && username != null) {
+            table.handleAction(username, action, amount);
+        }
+        return "redirect:/game/" + tableId;
+    }
+
     @GetMapping("/login")
     public String login() { return "login"; }
 

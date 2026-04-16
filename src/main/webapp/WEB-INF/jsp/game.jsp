@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>Poker P20 - Game Table</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/main.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
     <!-- Auto-refresh every 3 seconds to sync players -->
     <meta http-equiv="refresh" content="3">
@@ -24,22 +24,30 @@
         }
         .community-cards { display: flex; gap: 10px; }
         .card-item {
-            background: white; color: black; padding: 10px; border-radius: 5px;
-            width: 40px; height: 60px; font-weight: bold; border: 1px solid #ccc;
+            width: 70px;
+            height: 100px;
+            margin: 0 5px;
+        }
+        .card-item img {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         .players-container {
             display: flex; justify-content: space-around; width: 100%; margin-top: 20px;
         }
         .player-box {
-            padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px;
-            min-width: 100px; text-align: center;
+            padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px;
+            min-width: 120px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
         }
         .active-turn { border: 2px solid #ffd700; background: rgba(255, 215, 0, 0.1); }
         .my-hand { margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; }
     </style>
 </head>
 <body>
-    <div class="card" style="width: 800px;">
+    <div class="card" style="width: 900px;">
         <div style="display: flex; justify-content: space-between;">
             <h1>Table: ${table.id}</h1>
             <a href="${pageContext.request.contextPath}/" style="color: #ccc;">Back to Lobby</a>
@@ -60,13 +68,15 @@
                 <c:otherwise>
                     <div class="community-cards">
                         <c:forEach var="card" items="${table.currentRound.tableCards}">
-                            <div class="card-item">${card}</div>
+                            <div class="card-item">
+                                <img src="${pageContext.request.contextPath}/images/${card.suit}_${card.rank}.png" alt="${card}">
+                            </div>
                         </c:forEach>
                         <c:if test="${empty table.currentRound.tableCards}">
-                            <div style="color: rgba(255,255,255,0.3);">PRE-FLOP</div>
+                            <div style="color: rgba(255,255,255,0.3); font-size: 1.5rem; letter-spacing: 5px;">PRE-FLOP</div>
                         </c:if>
                     </div>
-                    <div style="position: absolute; bottom: 20px; font-weight: bold;">
+                    <div style="position: absolute; bottom: 20px; font-weight: bold; font-size: 1.2rem;">
                         POT: ${table.currentRound.pot} 💰
                     </div>
                 </c:otherwise>
@@ -89,17 +99,31 @@
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     <c:forEach var="p" items="${table.players}">
                         <c:if test="${p.name == currentUser}">
-                            <div class="card-item">${p.hand.getCard(0)}</div>
-                            <div class="card-item">${p.hand.getCard(1)}</div>
+                            <div class="card-item">
+                                <img src="${pageContext.request.contextPath}/images/${p.hand.getCard(0).suit}_${p.hand.getCard(0).rank}.png" alt="Card 1">
+                            </div>
+                            <div class="card-item">
+                                <img src="${pageContext.request.contextPath}/images/${p.hand.getCard(1).suit}_${p.hand.getCard(1).rank}.png" alt="Card 2">
+                            </div>
                         </c:if>
                     </c:forEach>
                 </div>
                 
                 <c:if test="${table.currentPlayer.name == currentUser}">
-                    <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                        <button style="width: 100px; background: #666;">Fold</button>
-                        <button style="width: 100px; background: #28a745;">Call</button>
-                        <button style="width: 100px; background: #e94560;">Raise</button>
+                    <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center;">
+                        <form action="${pageContext.request.contextPath}/game/${table.id}/action" method="post">
+                            <input type="hidden" name="action" value="fold">
+                            <button type="submit" style="width: 120px; background: #666; margin-top: 0;">Fold</button>
+                        </form>
+                        <form action="${pageContext.request.contextPath}/game/${table.id}/action" method="post">
+                            <input type="hidden" name="action" value="call">
+                            <button type="submit" style="width: 120px; background: #28a745; margin-top: 0;">Call</button>
+                        </form>
+                        <form action="${pageContext.request.contextPath}/game/${table.id}/action" method="post" style="display: flex; gap: 5px;">
+                            <input type="hidden" name="action" value="raise">
+                            <input type="number" name="amount" value="50" style="width: 60px; margin: 0; padding: 5px;">
+                            <button type="submit" style="width: 100px; background: #e94560; margin-top: 0;">Raise</button>
+                        </form>
                     </div>
                 </c:if>
             </div>

@@ -91,6 +91,24 @@ public class Player {
         this.chips += amount;
     }
 
+    public void addChips(int amount) {
+        this.chips += amount;
+    }
+
+    public void bet(int amount) {
+        if (deductChips(amount)) {
+            this.amountBet += amount;
+        }
+    }
+
+    public int getBet() {
+        return amountBet;
+    }
+
+    public void setBet(int amount) {
+        this.amountBet = amount;
+    }
+
     /**
      * Legger til et kort i spillerens hånd (hole card).
      * Navngitt etter prosjektets UML-diagram.
