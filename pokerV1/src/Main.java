@@ -4,15 +4,40 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        int number = getIntInput("How many players?", 2, 10);
+        int number = getIntInput("How many players?", 1, 10);
         if (number == -1) return;
         
         ArrayList<Player> players = new ArrayList<>();
         for (int i = 0; i < number; i++) {
-            String name = JOptionPane.showInputDialog("Name of player " + (i + 1) + ":");
-            if (name == null) break;
-            int chips = getIntInput("Amount of chips for " + name + ":", 1, 1000000);
-            players.add(new Player(name, chips));
+            String[] options = {"Login", "Register", "Cancel"};
+            int choice = JOptionPane.showOptionDialog(null, "Player " + (i + 1) + ": Choose an action", "Poker Login",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+            if (choice == 2 || choice == -1) return; // Cancel or closed
+
+            String name = JOptionPane.showInputDialog("Username:");
+            String pass = JOptionPane.showInputDialog("Password:");
+
+            if (choice == 1) { // REGISTER
+                if (DatabaseManager.registerPlayer(name, pass)) {
+                    JOptionPane.showMessageDialog(null, "Registration successful! You can now login.");
+                    i--; // Go back to login for this player
+                } else {
+                    JOptionPane.showMessageDialog(null, "Registration failed. Username might be taken.");
+                    i--;
+                }
+                continue;
+            }
+
+            // LOGIN
+            int chips = DatabaseManager.loginPlayer(name, pass);
+            if (chips != -1) {
+                players.add(new Player(name, chips));
+                JOptionPane.showMessageDialog(null, "Welcome " + name + "! Chips: " + chips);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid login for " + name);
+                i--;
+            }
         }
 
         int smallBlind = getIntInput("Write small blind value:", 1, 10000);
@@ -22,7 +47,6 @@ public class Main {
         while (players.size() > 1) {
             GameRound gameRound = new GameRound(players);
             
-            // Initialization for new round
             for (Player p : players) {
                 p.resetForNewRound();
                 p.setAmountBet(0);
@@ -44,18 +68,13 @@ public class Main {
                 player.addCard(cards.get(1));
             }
 
-            // PHASES: Pre-Flop -> Flop -> Turn -> River
             int lastBet = smallBlind * 2;
             int startIdx = (dealerIndex + 3) % players.size();
 
             while (true) {
-                // RUN BETTING STREET
                 lastBet = runBettingStreet(players, gameRound, startIdx, lastBet);
-                
-                // CHECK IF ROUND OVER (only one player remains)
                 if (countActivePlayers(players) <= 1) break;
 
-                // TRANSITION TO NEXT PHASE
                 RoundPhase current = gameRound.getRoundPhase();
                 if (current == RoundPhase.PRE_FLOP) gameRound.dealFlop();
                 else if (current == RoundPhase.FLOP) gameRound.dealTurn();
@@ -65,7 +84,7 @@ public class Main {
                 gameRound.nextPhase();
                 lastBet = 0;
                 for (Player p : players) p.setAmountBet(0);
-                startIdx = (dealerIndex + 1) % players.size(); // After flop, small blind starts
+                startIdx = (dealerIndex + 1) % players.size(); 
             }
 
             // SHOWDOWN / AWARD POT
@@ -73,6 +92,16 @@ public class Main {
             if (winner != null) {
                 JOptionPane.showMessageDialog(null, "🏆 " + winner.getName() + " wins " + gameRound.getPot() + " chips!");
                 winner.winChips(gameRound.getPot());
+                
+                // SAVE TO DATABASE
+                DatabaseManager.updateChips(winner.getName(), winner.getChips());
+            }
+
+            // UPDATE LOSERS TOO (so their chips go down in DB)
+            for (Player p : players) {
+                if (p != winner) {
+                    DatabaseManager.updateChips(p.getName(), p.getChips());
+                }
             }
 
             // ELIMINATION
