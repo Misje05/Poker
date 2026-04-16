@@ -11,14 +11,11 @@ public class Deck {
                 cards.add(card);
             }
         }
+        Collections.shuffle(cards);
     }
 
     public ArrayList<Card> getCards() {
         return cards;
-    }
-
-    public void shuffle() {
-        Collections.shuffle(cards);
     }
 
     public Card dealCard() {
