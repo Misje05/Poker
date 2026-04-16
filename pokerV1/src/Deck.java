@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 import java.util.Collections;
+
 /**
- * Representerer en kortstokk bestående av 52 spillkort.
- * Kortstokken inneholder alle kombinasjoner av {@code Suit} og {@code Rank}.
+ * Represents a deck of 52 playing cards containing all combinations of suits and ranks.
  */
 public class Deck {
     private ArrayList<Card> cards = new ArrayList<Card>();
-    /**
-     * Oppretter en ny kortstokk og fyller den med 52 unike kort.
-     */
 
+    /**
+     * Creates a new deck and fills it with 52 unique cards.
+     */
     public Deck () {
         for(Suit suit : Suit.values()) {
             for(Rank rank : Rank.values()) {
@@ -18,23 +18,29 @@ public class Deck {
             }
         }
     }
+
     /**
-     * Returnerer listen med kort i kortstokken.
+     * Returns the list of cards currently in the deck.
      *
-     * @return en {@code ArrayList} som inneholder alle kortene
-    */
+     * @return an ArrayList containing all remaining cards
+     */
     public ArrayList<Card> getCards() {
         return cards;
     }
-    //Trekker (og fjerner) det øverste kortet fra kortstokken.
+
+    /**
+     * Deals (and removes) the top card from the deck.
+     *
+     * @return the top card from the deck
+     */
     public Card dealCard() {
         Card card = cards.getFirst();
         cards.remove(card);
         return card;
     }
+
     /**
-     * Tømmer kortstokken for alle kort.
-     * Etter kall på denne metoden vil kortstokken være tom.
+     * Removes all cards from the deck.
      */
     public void reset() {
         cards.clear();
