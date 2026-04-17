@@ -1,4 +1,4 @@
-# ♠️ Poker (Java Web App)
+# Poker (Java Web App)
 
 A multiplayer poker game developed as a school project using Java.  
 The application supports online tables and multiple players connecting from different devices.
@@ -8,7 +8,7 @@ Want to try it out?
 
 ---
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - Java
 - Spring MVC
@@ -18,7 +18,7 @@ Want to try it out?
 
 ---
 
-## 🧠 Overview
+## Overview
 
 The application is built as a web-based system where:
 
@@ -28,7 +28,7 @@ The application is built as a web-based system where:
 
 ---
 
-## ▶️ Running the Project
+## Running the Project
 
 1. Clone the repository from Bonobo Git  
 2. Deploy the project to Apache TomEE  
@@ -37,7 +37,7 @@ The application is built as a web-based system where:
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
 Built to demonstrate:
 
@@ -47,12 +47,6 @@ Built to demonstrate:
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This project is for educational purposes only and does not involve real money.
-
----
-
-## 👨‍💻 Author
-
-- Magnus Misje
