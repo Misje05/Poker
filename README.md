@@ -2,6 +2,7 @@
 
 A multiplayer poker game developed as a school project using Java.  
 The application supports online tables and multiple players connecting from different devices.
+<br>
 Want to try it out? 
 **Live:** [here](http://ider-database.westeurope.cloudapp.azure.com:8081/poker/login)
 
