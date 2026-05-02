@@ -6,7 +6,7 @@ The application supports online tables and multiple players connecting from diff
 Want to try it out? 
 **Live:** [here](http://ider-database.westeurope.cloudapp.azure.com:8081/poker/login)
 
----
+<br>
 
 ## Tech Stack
 
@@ -16,7 +16,7 @@ Want to try it out?
 - Apache TomEE
 - Bonobo Git
 
----
+<br>
 
 ## Overview
 
@@ -26,7 +26,7 @@ The application is built as a web-based system where:
 - The server handles game logic and player actions  
 - Multiple users can connect simultaneously over a network  
 
----
+<br>
 
 ## Running the Project
 
@@ -35,7 +35,7 @@ The application is built as a web-based system where:
 3. Start the server  
 4. Open the application in a browser  
 
----
+<br>
 
 ## Purpose
 
@@ -45,7 +45,7 @@ Built to demonstrate:
 - Server-side rendering with JSP  
 - Multiplayer logic and state handling  
 
----
+<br>
 
 ## Disclaimer
 
